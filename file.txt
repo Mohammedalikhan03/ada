@@ -1,0 +1,953 @@
+PROGRAM 1 QUICK SORT
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#define BILLION 1000000000L;
+
+void quicksort(int a[ ],int Fir, int Last)
+{
+    int s;
+    if(Fir < Last)
+    {
+        s=partition(a,Fir,Last);
+        quicksort(a,Fir,s-1); // sort left part of array
+        quicksort(a,s+1,Last); // sort right part of array
+    }
+}
+
+int partition(int a[ ],int F, int L)
+{
+    int pivot, i, j;
+    pivot=a[F]; // first element is pivot element
+    i=F;
+    j=L;
+    while(i <= j)
+    {
+        while(a[i] <= pivot)
+            i++;
+        while(a[j] > pivot)
+            j--;
+        if(i < j)
+        {
+            int temp=a[i];
+            a[i]=a[j];
+            a[j]=temp;
+        }
+    }
+    a[F] = a[j];
+    a[j] = pivot;
+    return j;
+}
+int main()
+{
+    int a[100000], n;
+    struct timespec start, stop;
+    double accum;
+
+    printf("*QUICK SORT PROGRAM ***\n");
+    printf("Enter number of elements\n");
+    scanf("%d", &n);
+    
+    for(int i = 0; i < n; i++)
+        a[i] = rand() % 10000 + 1;
+
+    printf("Array elements to be sorted are\n");
+    for(int i = 0; i < n; i++)
+        printf("%d \t", a[i]);
+
+    a[n] = 10001;
+
+    if(clock_gettime(CLOCK_MONOTONIC, &start) == -1)
+    {
+        perror("clock gettime");
+        return EXIT_FAILURE;
+    }
+
+    quicksort(a, 0, n - 1);
+
+    if(clock_gettime(CLOCK_MONOTONIC, &stop) == -1)
+    {
+        perror("clock gettime");
+        return EXIT_FAILURE;
+    }
+
+    printf("\nThe sorted elements are\n");
+    for(int i = 0; i < n; i++)
+        printf("%d \t", a[i]);
+
+    accum = (double)(stop.tv_nsec - start.tv_nsec);
+
+    printf("\nTIME TAKEN : %f ns\n", accum);
+}
+
+
+
+
+PROGRAM 2: SELECTION SORT
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    int n, min, i, j, temp;
+    printf("Enter the number of random numbers to generate:  ");
+    scanf("%d", &n);
+
+    int a[n];
+
+    srand(time(0)); // Seed for random numbers
+
+    // Generating random numbers
+    printf("------------------------------\n");
+    printf("GIVEN NUMBERS ARE:\n");
+    for (i = 0; i < n; i++) {
+        a[i] = rand() % 10000;
+        printf("%d\t", a[i]);
+    }
+printf("\n\nSORTING..........\n");
+    clock_t start = clock(); // Start time
+
+    // Selection sort algorithm
+    for (i = 0; i < n - 1; i++) {
+        min = i;
+        for (j = i + 1; j < n; j++) {
+            if (a[j] < a[min])
+                min = j;
+        }
+        // Swap elements
+        temp = a[i];
+        a[i] = a[min];
+        a[min] = temp;
+    }
+
+    clock_t end = clock(); // End time
+
+    printf("FINISHED SORTING..........\n");
+    printf("AFTER SORTING ARRAY IS:\n");
+    for (i = 0; i < n; i++) {
+printf("%d\t", a[i]);
+    }
+
+    double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("\nTime taken: %f seconds\n", time_taken);
+
+    return 0;
+}
+
+
+
+
+
+PROGRAM 3:MERGE SORT
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void mergesort(int a[], int low, int high);
+void merge(int a[], int low, int mid, int high);
+
+void mergesort(int a[], int low, int high)
+{
+    int mid;
+    if (low < high)
+    {
+        mid = (low + high) / 2;
+        mergesort(a, low, mid);
+        mergesort(a, mid + 1, high);
+        merge(a, low, mid, high);
+    }
+}
+
+void merge(int a[], int low, int mid, int high)
+{
+    int i, j, h, k, b[100000];
+    h = low;
+    i = low;
+    j = mid + 1;
+
+    while ((h <= mid) && (j <= high))
+    {
+        if (a[h] < a[j])
+        {
+            b[i] = a[h];
+            h = h + 1;
+        }
+        else
+        {
+            b[i] = a[j];
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+
+    // Fixing the misplaced condition and ensuring correct merging
+    if (h > mid)
+    {
+        for (k = j; k <= high; k++)
+        {
+            b[i] = a[k];
+            i = i + 1;
+        }
+    }
+    else
+    {
+        for (k = h; k <= mid; k++)
+        {
+            b[i] = a[k];
+            i = i + 1;
+        }
+    }
+
+    // Copying sorted elements back into original array
+    for (k = low; k <= high; k++)
+        a[k] = b[k];
+}
+
+int main()
+{
+    int a[100000], n;
+    struct timespec start, stop;
+    double accum;
+
+    printf("**MERGE SORT PROGRAM***\n");
+    printf("Enter the number of elements\n");
+    scanf("%d", &n);
+
+    // Initializing array with random numbers
+    for (int i = 0; i < n; i++)
+        a[i] = rand() % 10000 + 1;
+
+    printf("\nArray elements to be sorted are\n");
+    for (int i = 0; i < n; i++)
+        printf("%d\t", a[i]);
+
+    // Measuring execution time
+    if (clock_gettime(CLOCK_MONOTONIC, &start) == -1)
+    {
+        perror("clock gettime");
+        return EXIT_FAILURE;
+    }
+
+    mergesort(a, 0, n - 1);
+
+    if (clock_gettime(CLOCK_MONOTONIC, &stop) == -1)
+    {
+        perror("clock gettime");
+        return EXIT_FAILURE;
+    }
+
+    printf("\nThe sorted elements are\n");
+    for (int i = 0; i < n; i++)
+        printf("%d\t", a[i]);
+
+    accum = (double)(stop.tv_nsec - start.tv_nsec);
+    printf("\nTIME TAKEN : %f ns\n", accum);
+
+    return 0;
+}
+
+
+
+
+PROGRAM 4:KRUSKALS
+
+#include <stdio.h>
+
+int cost[10][10];
+
+int kruskals(int n, int mincost)
+{
+    int ne = 1, a = 0, u = 0, b = 0, v = 0, min;
+    int parent[10];
+
+    for (int i = 0; i < n; i++)
+        parent[i] = 0;
+
+    while (ne < n)
+    {
+        min = 999;
+
+        for (int i = 1; i <= n; i++)
+        {
+            for (int j = 1; j <= n; j++)
+            {
+                if (cost[i][j] < min)
+                {
+                    min = cost[i][j];
+                    a = u = i;
+                    b = v = j;
+                }
+            }
+        }
+
+        while (parent[u] > 0)
+            u = parent[u];
+        while (parent[v] > 0)
+            v = parent[v];
+
+        if (u != v)
+        {
+            printf("%d Minimum Edge is :\n", ne++);
+            printf("%d , %d and its cost is %d\n", a, b, min);
+            mincost += min;
+            parent[v] = u;
+        }
+
+        cost[a][b] = cost[b][a] = 999;
+    }
+
+    return mincost;
+}
+void main()
+{
+    int i, j, mincost = 0;
+
+    printf("**** KRUSKAL'S ALGORITHM ****\n");
+    printf("Enter the number of nodes: \n");
+    int n;
+    scanf("%d", &n);
+
+    printf("Enter the cost matrix\n");
+    for (i = 1; i <= n; i++)
+    {
+        for (j = 1; j <= n; j++)
+        {
+            scanf("%d", &cost[i][j]);
+        }
+    }
+
+    printf("The entered cost matrix is\n");
+    for (i = 1; i <= n; i++)
+    {
+        for (j = 1; j <= n; j++)
+        {
+            printf("%d\t", cost[i][j]);
+        }
+        printf("\n");
+    }
+
+    mincost = kruskals(n, mincost);
+    printf("The minimum spanning tree cost is: ");
+    printf("%d\n", mincost);
+    printf("**** ******** ****");
+}
+
+
+
+
+PROGRAM 5: GREEDY KNAPSACK
+
+#include <stdio.h>
+void main()
+{
+    float w[10], p[10];
+    float ratio[10];
+    int i, n, m;
+
+    printf("***KNAPSACK PROBLEM ***\n");
+    printf("Enter the total number of items:\n");
+    scanf("%d", &n);
+
+    printf("Enter the weight of each item:\n");
+    for(i = 1; i <= n; i++)
+        scanf("%f", &w[i]);
+
+    printf("Enter the profit of each item:\n");
+    for(i = 1; i <= n; i++)
+        scanf("%f", &p[i]);
+
+    printf("Enter the knapsack capacity: \n");
+    scanf("%d", &m);
+
+    for(i = 1; i <= n; i++)
+        ratio[i] = p[i] / w[i];
+
+    printf("Information about knapsack are\n");
+    displayinfo(n, w, p, ratio);
+
+    printf("Capacity = %d\n", m);
+    sortArray(n, ratio, w, p);
+
+    printf("\nDetails after sorting items : \n");
+    displayinfo(n, w, p, ratio);
+
+    knapsack(m, n, w, p);
+    printf("***********");
+}
+sortArray(int n, float ratio[], float w[], float p[])
+{
+    int i, j;
+    for(i = 1; i <= n; i++)
+        for(j = 1; j <= n - i; j++)
+        {
+            if(ratio[j] < ratio[j + 1])
+            {
+                float temp = ratio[j];
+                ratio[j] = ratio[j + 1];
+                ratio[j + 1] = temp;
+
+                temp = w[j];
+                w[j] = w[j + 1];
+                w[j + 1] = temp;
+
+                temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+        }
+}
+
+void displayinfo(int n, float w[], float p[], float ratio[])
+{
+    printf("ITEM\t WEIGHT\t PROFIT\t RATIO\n");
+    for(int i = 1; i <= n; i++)
+    {
+        printf("%d\t %f\t %f\t %f\n", i, w[i], p[i], ratio[i]);
+        printf("\n");
+    }
+}
+
+void knapsack(int u, int n, float w[], float p[])
+{
+    float x[10], tp = 0;
+    int i;
+    for(i = 1; i <= n; i++)
+        x[i] = 0;
+
+for(i = 1; i <= n; i++)
+{
+    if(w[i] > u)
+        break;
+    else
+    {
+        x[i] = 1;
+        tp = tp + p[i];
+        u = (int)(u - w[i]);
+    }
+}
+
+if(i < n)
+{
+    x[i] = u / w[i];
+    tp = tp + (x[i] * p[i]);
+}
+
+printf("\nThe result is = ");
+for(i = 1; i <= n; i++)
+    printf("%f\t", x[i]);
+
+printf("\nMaximum profit is %f", tp);
+
+}
+
+
+
+
+
+PROGRAM 6:PRIMS
+
+#include <stdio.h>
+
+int cost[10][10];
+
+int prims(int n, int mincost)
+{
+    int nearV[10], t[10][3];
+    int u = 0, i, j, k;
+
+    for (i = 2; i <= n; i++)
+        nearV[i] = 1;
+
+    nearV[1] = 0;
+
+    for (i = 1; i < n; i++)
+    {
+        int min = 999;
+        for (j = 1; j <= n; j++)
+        {
+            if (nearV[j] != 0 && cost[j][nearV[j]] < min)
+            {
+                min = cost[j][nearV[j]];
+                u = j;
+            }
+        }
+
+        t[i][1] = u;
+        t[i][2] = nearV[u];
+
+        mincost += min;
+        nearV[u] = 0;
+
+        for (k = 1; k <= n; k++)
+        {
+            if (nearV[k] != 0 && cost[k][nearV[k]] > cost[k][u])
+                nearV[k] = u;
+        }
+
+        printf("(%d) MINIMUM EDGE IS (%d-%d)\n", i, t[i][1], t[i][2]);
+    }
+
+    printf("MINIMUM COST IS : %d\n", mincost);
+    return mincost;
+}
+void main()
+{
+    int i, j, mincost = 0, n;
+
+    printf("** PRIMS ALGORITHM **\n");
+    printf("Enter the number of nodes\n");
+    scanf("%d", &n);
+
+    printf("Enter the cost matrix\n");
+    for (i = 1; i <= n; i++)
+    {
+        for (j = 1; j <= n; j++)
+        {
+            scanf("%d", &cost[i][j]);
+        }
+    }
+
+    printf("The entered cost matrix is\n");
+    for (i = 1; i <= n; i++)
+    {
+        for (j = 1; j <= n; j++)
+        {
+            printf("%d\t", cost[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("Minimum Spanning Tree Edges and costs are \n");
+    mincost = prims(n, mincost);
+    printf("The minimum cost is %d \n", mincost);
+    printf("*** ******* ****");
+}
+
+
+
+
+
+PROGRAM 7:FLOYD
+
+#include <stdio.h>
+
+void floyd(int a[10][10], int n)
+{
+    for (int k = 1; k <= n; k++)
+    {
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                a[i][j] = min(a[i][j], a[i][k] + a[k][j]);
+    }
+}
+
+int min(int a, int b)
+{
+    if (a > b)
+        return b;
+    else
+        return a;
+}
+
+int main()
+{
+    int a[10][10];
+    int i, j, n;
+    printf("**FLOYD'S ALGORITHM****\n");
+    printf("Enter the number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter the cost matrix\n");
+    for (i = 1; i <= n; i++)
+        for (j = 1; j <= n; j++)
+            scanf("%d", &a[i][j]);
+
+    printf("\nEntered cost matrix is: \n");
+    for (i = 1; i <= n; i++)
+    {
+        for (j = 1; j <= n; j++)
+            printf("%d\t", a[i][j]);
+        printf("\n");
+    }
+
+    floyd(a, n);
+
+    printf("All pair shortest path matrix: \n");
+    for (i = 1; i <= n; i++)
+    {
+        for (j = 1; j <= n; j++)
+            printf("%d\t", a[i][j]);
+        printf("\n");
+    }
+
+    printf("************\n");
+}
+// Warshall's Algorithm - Function
+
+void warshall(int a[10][10], int n)
+{
+    for (int k = 1; k <= n; k++)
+    {
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                a[i][j] = a[i][j] || (a[i][k] && a[k][j]);
+    }
+}
+
+/* (** Please provide adjacency matrix as the input for Warshall’s algorithm) */
+
+
+
+
+
+
+
+Lab Program-8
+Design and implement C/C++ Program to find shortest paths from a given 
+vertex in a weighted connected graph to other vertices using Dijkstra's 
+algorithm. 
+#include <stdio.h> 
+#include <limits.h> 
+#define MAX 100  // Maximum number of vertices 
+// Function to find the vertex with the minimum distance 
+int minDistance(int dist[], int visited[], int n) { 
+int min = INT_MAX, min_index = -1; 
+for (int v = 0; v < n; v++) { 
+if (!visited[v] && dist[v] <= min) { 
+min = dist[v]; 
+min_index = v; 
+} 
+} 
+return min_index; 
+} 
+// Function to print shortest path distances 
+void printSolution(int dist[], int n, int src) { 
+printf("\nShortest distances from source vertex %d:\n", src); 
+for (int i = 0; i < n; i++) { 
+printf("To vertex %d = %d\n", i, dist[i]); 
+} 
+} 
+// Dijkstra's algorithm function 
+void dijkstra(int graph[MAX][MAX], int src, int n) { 
+int dist[MAX];      // Stores shortest distances 
+int visited[MAX];   // Marks visited vertices 
+// Initialize distances and visited array 
+for (int i = 0; i < n; i++) { 
+dist[i] = INT_MAX; 
+visited[i] = 0; 
+} 
+dist[src] = 0; // Distance to source is 0 
+// Find shortest path for all vertices 
+for (int count = 0; count < n - 1; count++) { 
+int u = minDistance(dist, visited, n); 
+visited[u] = 1; 
+// Update distances of adjacent vertices 
+for (int v = 0; v < n; v++) { 
+if (!visited[v] && graph[u][v] && dist[u] != INT_MAX && 
+dist[u] + graph[u][v] < dist[v]) { 
+dist[v] = dist[u] + graph[u][v]; 
+} 
+} 
+} 
+// Print the result 
+printSolution(dist, n, src); 
+} 
+// Main function to get input and call Dijkstra's algorithm 
+int main() { 
+int graph[MAX][MAX]; 
+int n, src; 
+printf("Enter number of vertices: "); 
+scanf("%d", &n); 
+printf("Enter the adjacency matrix (0 for no edge):\n"); 
+for (int i = 0; i < n; i++) { 
+for (int j = 0; j < n; j++) { 
+scanf("%d", &graph[i][j]); 
+} 
+} 
+printf("Enter the source vertex (0 to %d): ", n - 1); 
+scanf("%d", &src); 
+dijkstra(graph, src, n); 
+return 0; 
+} 
+OUTPUT: 
+Enter number of vertices: 5 
+Enter the adjacency matrix (0 for no edge): 
+0 10 0 0 5 
+0 0 1 0 2 
+0 0 0 4 0 
+7 0 6 0 0 
+0 3 9 2 0 
+Enter the source vertex (0 to 4): 0 
+ 
+Shortest distances from source vertex 0: 
+To vertex 0 = 0 
+To vertex 1 = 8 
+To vertex 2 = 9 
+To vertex 3 = 7 
+To vertex 4 = 5 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Lab Program-9
+Design and implement C/C++ Program to obtain the Topological ordering 
+of vertices in a given digraph. 
+#include <stdio.h> 
+#include <stdlib.h> 
+#define MAX 100 
+int graph[MAX][MAX]; // Adjacency matrix 
+int visited[MAX];    // Visited array 
+int stack[MAX];      // Stack to store topological order 
+int top = -1;        // Stack top 
+// Function to perform DFS and push vertices to stack 
+void dfs(int v, int n) { 
+visited[v] = 1; 
+for (int i = 0; i < n; i++) { 
+if (graph[v][i] && !visited[i]) { 
+dfs(i, n); 
+} 
+} 
+stack[++top] = v; // Push after visiting all adjacent vertices 
+} 
+// Function to perform Topological Sort 
+void topologicalSort(int n) { 
+for (int i = 0; i < n; i++) { 
+visited[i] = 0; // Initialize all as not visited 
+} 
+for (int i = 0; i < n; i++) { 
+if (!visited[i]) { 
+dfs(i, n); 
+} 
+} 
+// Print topological order 
+printf("\nTopological Order of the given graph:\n"); 
+while (top != -1) { 
+printf("%d ", stack[top--]); 
+} 
+printf("\n"); 
+} 
+ 
+int main() { 
+    int n; 
+    printf("Enter the number of vertices: "); 
+    scanf("%d", &n); 
+    printf("Enter the adjacency matrix of the directed graph (0 or 1 only):\n"); 
+    for (int i = 0; i < n; i++) { 
+        for (int j = 0; j < n; j++) { 
+            scanf("%d", &graph[i][j]); 
+        } 
+    } 
+    topologicalSort(n); 
+    return 0; 
+} 
+ 
+OUTPUT:  
+Enter the number of vertices: 6 
+Enter the adjacency matrix of the directed graph (0 or 1 only): 
+0 1 1 0 0 0 
+0 0 0 1 0 0 
+0 0 0 1 1 0 
+0 0 0 0 0 1 
+0 0 0 0 0 1 
+0 0 0 0 0 0 
+
+
+
+
+
+
+
+Program-10
+Design and implement C/C++ Program to solve 0/1 Knapsack problem using Dynamic 
+Programming method. 
+#include <stdio.h> 
+// Function to return the maximum of two integers 
+int max(int a, int b) { 
+return (a > b) ? a : b; 
+} 
+// Function to solve 0/1 Knapsack problem using Dynamic Programming 
+int knapsack(int W, int wt[], int val[], int n) { 
+int i, w; 
+int K[n + 1][W + 1]; 
+// Build table K[][] in bottom-up manner 
+for (i = 0; i <= n; i++) { 
+for (w = 0; w <= W; w++) { 
+if (i == 0 || w == 0) 
+K[i][w] = 0; 
+else if (wt[i - 1] <= w) 
+K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w]); 
+else 
+K[i][w] = K[i - 1][w]; 
+} 
+} 
+return K[n][W];  // The last cell contains the answer 
+} 
+int main() { 
+int n, W; 
+// User input 
+printf("Enter the number of items: "); 
+scanf("%d", &n); 
+int val[n], wt[n]; 
+printf("Enter the values of the items:\n"); 
+for (int i = 0; i < n; i++) { 
+printf("Value of item %d: ", i + 1); 
+scanf("%d", &val[i]); 
+} 
+printf("Enter the weights of the items:\n"); 
+for (int i = 0; i < n; i++) { 
+printf("Weight of item %d: ", i + 1); 
+scanf("%d", &wt[i]); 
+} 
+printf("Enter the capacity of the knapsack: "); 
+scanf("%d", &W); 
+int result = knapsack(W, wt, val, n); 
+printf("Maximum value that can be put in knapsack = %d\n", result); 
+return 0; 
+} 
+OUTPUT: 
+Enter the number of items: 4 
+Enter the values of the items: 
+Value of item 1: 60 
+Value of item 2: 100 
+Value of item 3: 120 
+Value of item 4: 80 
+Enter the weights of the items: 
+Weight of item 1: 10 
+Weight of item 2: 20 
+Weight of item 3: 30 
+Weight of item 4: 40 
+Enter the capacity of the knapsack: 50 
+Maximum value that can be put in knapsack = 220 
+
+
+
+
+
+
+Program-11
+Design and implement C/C++ Program to find a subset of a given set S = {sl , s2,.....,sn} 
+of n positive integers whose sum is equal to a given positive integer d. 
+#include <stdio.h> 
+#include <stdbool.h> 
+// Function to print the subset 
+void printSubset(int set[], bool subset[][1001], int n, int sum) { 
+int i = n; 
+int s = sum; 
+printf("Subset found: "); 
+while (i > 0 && s > 0) { 
+if (subset[i][s] && !subset[i - 1][s]) { 
+printf("%d ", set[i - 1]); 
+s -= set[i - 1]; 
+} 
+i--; 
+} 
+printf("\n"); 
+} 
+// Function to find if subset with given sum exists 
+bool isSubsetSum(int set[], int n, int sum) { 
+bool subset[n + 1][1001]; // assuming max sum = 1000 
+// Initialization: sum 0 is always possible with empty subset 
+for (int i = 0; i <= n; i++) 
+subset[i][0] = true; 
+// Initialization: empty set can't make positive sum 
+for (int i = 1; i <= sum; i++) 
+subset[0][i] = false; 
+// Fill the subset table 
+for (int i = 1; i <= n; i++) { 
+for (int s = 1; s <= sum; s++) { 
+if (set[i - 1] > s) 
+subset[i][s] = subset[i - 1][s]; 
+else 
+subset[i][s] = subset[i - 1][s] || subset[i - 1][s - set[i - 1]]; 
+} 
+} 
+if (subset[n][sum]) { 
+printSubset(set, subset, n, sum); 
+return true; 
+} else { 
+return false; 
+} 
+} 
+int main() { 
+int n, d; 
+// User input 
+printf("Enter the number of elements in the set: "); 
+scanf("%d", &n); 
+int set[n]; 
+printf("Enter the elements of the set:\n"); 
+for (int i = 0; i < n; i++) { 
+printf("Element %d: ", i + 1); 
+scanf("%d", &set[i]); 
+} 
+printf("Enter the target sum: "); 
+scanf("%d", &d); 
+if (!isSubsetSum(set, n, d)) 
+printf("No subset with the given sum found.\n"); 
+return 0; 
+} 
+OUTPUT: 
+Enter the number of elements in the set: 5 
+Enter the elements of the set: 
+Element 1: 3 
+Element 2: 34 
+Element 3: 4 
+Element 4: 12 
+Element 5: 5 
+Enter the target sum: 9 
+Subset found: 5 4 
+
+
+
+
+
+
+Program-12
+Design and implement C/C++ Program for N Queen's problem using Backtracking. 
+#include <stdio.h> 
+#include <stdbool.h> 
+#include <math.h> 
+#include<stdlib.h> 
+#define MAX 20 
+int board[MAX];  // board[i] stores the column of queen in row i 
+// Function to check if the queen placement is safe 
+bool isSafe(int row, int col) { 
+for (int i = 0; i < row; i++) { 
+// Check for column and diagonal conflicts 
+if (board[i] == col || abs(board[i] - col) == abs(i - row)) 
+return false; 
+} 
+return true; 
+} 
+// Function to print the board configuration 
+void printSolution(int n) { 
+printf("One of the solutions:\n"); 
+for (int i = 0; i < n; i++) { 
+for (int j = 0; j < n; j++) { 
+if (board[i] == j) 
+printf("Q "); 
+else 
+printf(". "); 
+} 
+printf("\n"); 
+} 
+} 
+// Recursive function to solve the N-Queen problem 
+bool solveNQueens(int row, int n) { 
+if (row == n) { 
+printSolution(n); 
+return true;  // Found one sol
